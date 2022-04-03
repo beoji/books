@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <title>Books App - {% block title %}{% endblock %}</title>
+        <meta name="author" content="">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700&display=swap">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+        <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    </head>
+
+    <body style="text-align: center;">
+
+        <nav class="navbar is-light" role="navigation" aria-label="main navigation">
+
+            <div id="navbar-burger" class="navbar-burger burger" data-target="navbar-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <div id="navbar-menu" class="navbar-menu">
+
+            <div class="navbar-start">
+                <a class="navbar-item" href="{% url 'book-list' %}">
+                    <span class="icon"><i class="fas fa-bars"></i></span>
+                    <span>Lista książek</span>
+                </a>
+                <a class="navbar-item" href="{% url 'book-create' %}">
+                    <span class="icon"><i class="fas fa-book"></i></span>
+                    <span>Dodaj książkę</span>
+                </a>
+                <a class="navbar-item" href="{% url 'author-create' %}">
+                    <span class="icon"><i class="fas fa-user"></i></span>
+                    <span>Dodaj autora</span>
+                </a>
+                <a class="navbar-item" href="{% url 'google-search' %}">
+                    <span class="icon"><i class="fab fa-google"></i></span>
+                    <span>Google Books</span>
+                </a>
+            </div>
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    {% if request.resolver_match.url_name == 'book-list' %}
+                    <a id="search-button-toggle" class="button is-info" href="#">
+                    <span class="icon"><i id="search-arrow" class="fas fa-angle-down"></i></span>
+                    <span>Szukaj</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            </div>
+        </nav>
+
+        {% load widget_tweaks %}
+
+        <nav id="search-navbar" class="navbar is-light" style="display:none;">
+            <form id="search-form" action="{% url 'book-list' %}" method="get" novalidate >
+                <div class="field is-horizontal">
+                {% for field in search_form.visible_fields %}
+                    <div class="field-label is-small">
+                        <label class="label">{{ field.label_tag }}</label>
+                    </div>
+                    <div class="field-body">
+                            <div class="field">
+                        <p class="control is-expanded">
+                            {% render_field field class="input is-small" %}
+                        </p>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="buttons">
+                    <button class="button is-info is-small" type="submit">Szukaj</button>
+                    <button class="button is-info is-light is-small" type="button" onclick="window.location.href = {% url 'book-list' %};">Wyczyść</button>
+                </div>
+                </div>
+            </form>
+        </nav>
+
+        <main>
+
+            {% block content %}
+            {% endblock %}
+
+        </main>
+
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="{% static 'js/django.js' %}"></script>
+
+    </body>
+
+</html>

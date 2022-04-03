@@ -1,0 +1,136 @@
+{% extends 'skeleton.html' %}
+
+{% block content %}
+
+{% load widget_tweaks %}
+
+{% if books %}
+<div class="notification is-success">
+  <button class="delete"></button>
+  <p>Znaleziono {{ count_books }} książek <p>
+</div>
+{% endif %}
+
+<form method="post" novalidate>
+  {% csrf_token %}
+  <div class="columns is-multiline">
+
+    <div class="column is-12">
+      <div class="field">
+        <label class="label">{{ form.q.label_tag }}</label>
+        <div class="control">
+          {% render_field form.q class="input is-large" %}
+        </div>
+      </div>
+    </div>
+<!--<div class="column is-12">
+      <a id="advanced-search-toggle" class="is-link is-small">Wyszukiwanie zaawansowane</a>
+    </div> -->
+    <div id="advanced-search" class="column is-12">
+      <div class="columns is-multiline">
+        {% for field in form.visible_fields %}
+        {% if field.name == 'q' %}
+        {% else %}
+
+        <div class="column is-12-mobile is-6-tablet is-4-desktop is-3-widescreen is-2-fullhd">
+          <div class="field">
+            <label class="label">{{ field.label_tag }}</label>
+            <div class="control">
+              {% render_field field class="input" %}
+            </div>
+            {% if field.help_text %}
+            <p class="help">{{ field.help_text }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="column is-12-mobile is-6-tablet is-4-desktop is-3-widescreen is-2-fullhd">
+      <div class="control">
+        <button type="submit" class="button is-link">Szukaj</button>
+      </div>
+    </div>
+
+  </div>
+
+</form>
+
+
+{% if books %}
+
+<div class="columns is-multiline">
+  <div class="column is-12-mobile is-2-tablet">
+    <div class="select">
+      <select id="books_per_page">
+        <option value='12' {% if request.session.books_per_page == '12' %}selected{% endif %}>12</option>
+        <option value='24' {% if request.session.books_per_page == '24' %}selected{% endif %}>24</option>
+        <option value='40' {% if request.session.books_per_page == '40' %}selected{% endif %}>40</option>
+      </select>
+    </div>
+  </div>
+</div>
+{{ request.session.books_per_page }}
+<div class="columns is-multiline">
+
+  {% for book in books %}
+  <div class="column is-12-mobile is-6-tablet is-4-desktop is-3-widescreen is-2-fullhd">
+
+    <div class="card">
+      <div class="card-image" style="background-image: url({{ book.volumeInfo.imageLinks.thumbnail }}); background-size:cover;"></div>
+
+      <div class="card-content">
+        <h5 class="title is-6">{{ book.volumeInfo.title|truncatechars:70 }}</h5>
+        {% for author in book.volumeInfo.authors %}
+        <h6 class="subtitle is-6">{{ author }}</h6>
+        {% endfor %}
+
+        <div>Data publikacji: {{ book.volumeInfo.publishedDate }}</div>
+        <div>ISBN: {{ book.volumeInfo.industryIdentifiers.1.identifier }}</div>
+        <div>Liczba stron: {{ book.volumeInfo.pageCount }}</div>
+        <div>Język: {{ book.volumeInfo.language }}</div>
+      </div>
+
+    </div>
+
+  </div>
+
+  {% endfor %}
+
+</div>
+
+{% endif %}
+
+
+<nav class="pagination" role="navigation" aria-label="pagination">
+  <a class="pagination-previous">Previous</a>
+  <a class="pagination-next">Next page</a>
+  {% if books.has_other_pages %}
+  <ul class="pagination-list">
+    {% if books.has_previous %}
+      <li><a class="pagination-link" href="#">&laquo;</a></li>
+    {% else %}
+      <li><span>&laquo;</span></li>
+    {% endif %}
+
+    {% for i in books.paginator.page_range %}
+      {% if books.number == i %}
+        <li class="pagination-link is-current"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a class="pagination-link" href="#">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if books.has_next %}
+      <li><a class="pagination-link" href="#">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+  {% endif %}
+</nav>
+
+
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'skeleton.html' %}
+
+{% block title %}
+    Add book
+{% endblock %}
+
+{% block content %}
+
+{% load widget_tweaks %}
+
+<form method="post" novalidate>
+    {% csrf_token %}
+    {% for hidden_field in form.hidden_fields %}
+        {{ hidden_field }}
+    {% endfor %}
+
+    {% for error in form.non_field_errors %}
+        <p class="help is-danger">{{ error }}</p>
+    {% endfor %}
+
+    {% for field in form.visible_fields %}
+    <div class="field">
+        <label class="label">{{ field.label_tag }}</label>
+        {% for error in field.errors %}
+            <p class="help is-danger">{{ error }}</p>
+        {% endfor %}
+        <div class="control">
+            {% if field.name == 'authors' %}
+            <div class="select is-multiple">
+                {% render_field field size="8" %}
+            </div>
+            {% elif field.name == 'language' %}
+            <div class="select">
+                {% render_field field %}
+            </div>
+            {% else %}
+            {% render_field field class="input" %}
+            {% endif %}
+        </div>
+        {% if field.help_text %}
+            <p class="help">{{ field.help_text }}</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <div class="field is-grouped">
+        <div class="control">
+            <button type="submit" class="button is-link">Zapisz</button>
+        </div>
+        <div class="control">
+            <input type="button" class="button is-link is-light" value="Anuluj" onclick="window.location.href = {% url 'book-list' %};">
+        </div>
+    </div>
+
+</form>
+
+{% endblock %}

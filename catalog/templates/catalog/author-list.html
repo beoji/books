@@ -1,0 +1,14 @@
+{% extends 'skeleton.html' %}
+
+{% block title %}
+    List of autors
+{% endblock %}
+
+
+{% block content %}
+
+{% for author in authors %}
+    <p>{{ author.first_name }} {{ author.last_name }}</p>
+{% endfor %}
+
+{% endblock %}
